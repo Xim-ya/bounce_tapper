@@ -1,5 +1,5 @@
+import 'package:bounce_tapper/src/bounce_tapper.dart';
 import 'package:flutter/material.dart';
-import 'package:zoom_tapper/src/zoom_tapper.dart';
 
 class SamplePage extends StatelessWidget {
   const SamplePage({super.key});
@@ -12,7 +12,7 @@ class SamplePage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ZoomTapper(
+              BounceTapper(
                 child: FilledButton(
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -27,7 +27,7 @@ class SamplePage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 50),
-              ZoomTapper(
+              BounceTapper(
                 onTap: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -47,12 +47,12 @@ class SamplePage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 50),
-              ZoomTapper(
+              BounceTapper(
                 onTap: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text(
-                        'OnLongPressUp!',
+                        'OnTap!',
                       ),
                     ),
                   );

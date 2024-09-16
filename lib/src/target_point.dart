@@ -1,4 +1,4 @@
-part of 'zoom_tapper.dart';
+part of 'bounce_tapper.dart';
 
 /// A variable to track the pointer's unique identifier during a touch event.
 /// This helps to ensure that only the current touch event (represented by a pointer ID)

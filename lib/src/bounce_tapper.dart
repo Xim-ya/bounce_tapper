@@ -3,18 +3,18 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-part 'zoom_tapper_event.dart';
+part 'bounce_tapper_event.dart';
 
 part 'target_point.dart';
 
-class ZoomTapper extends StatefulWidget {
-  const ZoomTapper({
+class BounceTapper extends StatefulWidget {
+  const BounceTapper({
     super.key,
     required this.child,
     this.onTap,
     this.onLongPress,
     this.onLongPressUp,
-    this.zoomLevel = 0.965,
+    this.shrinkScaleFactor = 0.965,
     this.shrinkCurve = Curves.easeInSine,
     this.growCurve = Curves.easeOutSine,
     this.shrinkDuration = const Duration(milliseconds: 160),
@@ -24,9 +24,9 @@ class ZoomTapper extends StatefulWidget {
     this.highlightColor = const Color(0x1F939BAC),
     this.enable = true,
     this.blockTapOnLongPressEvent = true,
-    this.disableZoomOnScroll = true,
-  }) : assert(zoomLevel > 0 && zoomLevel <= 1,
-            'zoomLevel must be greater than 0 and less than or equal to 1');
+    this.disableBounceOnScroll = true,
+  }) : assert(shrinkScaleFactor > 0 && shrinkScaleFactor <= 1,
+            'shrinkScaleFactor must be greater than 0 and less than or equal to 1');
 
   /// The child widget that will have the shrink/grow animation applied.
   final Widget child;
@@ -34,11 +34,9 @@ class ZoomTapper extends StatefulWidget {
   /// Callback methods for various touch interactions.
   final Function()? onTap, onLongPress, onLongPressUp;
 
-  /// The shrink scale factor.
-  ///
   /// The closer to 0, the more it will shrink.
   /// Values between 0 and 1 (exclusive) are valid.
-  final double zoomLevel;
+  final double shrinkScaleFactor;
 
   /// The curve for shrink and grow animations.
   final Curve shrinkCurve, growCurve;
@@ -65,7 +63,7 @@ class ZoomTapper extends StatefulWidget {
   /// Whether to enable grow animation when scrolling.
   ///
   /// If true, the grow animation will be disabled while scrolling.
-  final bool disableZoomOnScroll;
+  final bool disableBounceOnScroll;
 
   /// Controls whether a tap event is blocked if a long press event occurs.
   ///
@@ -73,11 +71,11 @@ class ZoomTapper extends StatefulWidget {
   final bool blockTapOnLongPressEvent;
 
   @override
-  State<StatefulWidget> createState() => _ZoomTapperState();
+  State<StatefulWidget> createState() => _BounceTapperState();
 }
 
-class _ZoomTapperState extends State<ZoomTapper>
-    with SingleTickerProviderStateMixin<ZoomTapper>, _Event {
+class _BounceTapperState extends State<BounceTapper>
+    with SingleTickerProviderStateMixin<BounceTapper>, _Event {
   /// Animation controller to manage animation states.
   late final AnimationController _controller;
 
@@ -103,7 +101,7 @@ class _ZoomTapperState extends State<ZoomTapper>
       duration: widget.shrinkDuration,
       reverseDuration: widget.growDuration,
     );
-    _animation = Tween(begin: 1.0, end: widget.zoomLevel).animate(
+    _animation = Tween(begin: 1.0, end: widget.shrinkScaleFactor).animate(
       CurvedAnimation(
         parent: _controller,
         curve: widget.shrinkCurve,
@@ -124,7 +122,7 @@ class _ZoomTapperState extends State<ZoomTapper>
 
       // Listen for scroll events to trigger the grow animation if enabled.
       if (Scrollable.maybeOf(context)?.widget.controller != null &&
-          widget.disableZoomOnScroll) {
+          widget.disableBounceOnScroll) {
         Scrollable.of(context).widget.controller!.addListener(
           () async {
             if (!widget.enable || !_controller.isCompleted) return;
@@ -238,10 +236,11 @@ class _ZoomTapperState extends State<ZoomTapper>
                         child: AnimatedBuilder(
                           animation: _animation,
                           builder: (context, child) {
-                            final opacity = _animation.value == widget.zoomLevel
-                                ? 1.0
-                                : (1.0 - _animation.value) /
-                                    (1.0 - widget.zoomLevel);
+                            final opacity =
+                                _animation.value == widget.shrinkScaleFactor
+                                    ? 1.0
+                                    : (1.0 - _animation.value) /
+                                        (1.0 - widget.shrinkScaleFactor);
                             return Opacity(
                               opacity: opacity,
                               child: ColoredBox(

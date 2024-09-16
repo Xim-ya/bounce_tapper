@@ -1,7 +1,7 @@
-name: zoom_tapper
-description: "Smooth touch animations with Shrink/Grow effects, easily enhancing user interaction."
-version: 1.0.2
-homepage: https://github.com/Xim-ya/zoom_tapper
+name: bounce_tapper
+description: "Smooth on-tap bounce (shrink/grow) animation that can easily enhance user touch interactions."
+version: 1.0.3
+homepage: https://github.com/Xim-ya/bounce_tapper
 
 environment:
   sdk: '>=3.4.0 <4.0.0'

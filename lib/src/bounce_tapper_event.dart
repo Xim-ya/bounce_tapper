@@ -1,4 +1,4 @@
-part of 'zoom_tapper.dart';
+part of 'bounce_tapper.dart';
 
 mixin class _Event {
   /// Checks if a pointer is within the bounds of the touch area.
