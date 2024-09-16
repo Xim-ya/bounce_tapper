@@ -1,7 +1,7 @@
 name: zoom_tapper
 description: "Smooth touch animations with Shrink/Grow effects, easily enhancing user interaction."
 version: 1.0.0
-homepage:
+homepage: https://github.com/Xim-ya/zoom_tapper
 
 environment:
   sdk: '>=3.4.0 <4.0.0'

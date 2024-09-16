@@ -1,5 +1,5 @@
 <h1 align="center">Zoom Tapper</h1>
-<p align="center"><img src="https://velog.velcdn.com/images/ximya_hf/post/9e804f0a-6988-4157-8db9-c42ffc48be20/image.png"/></p><p align="center"> ZoomTapper allows you to effortlessly apply smooth Zoom (Shrink / Grow) touch animations to your widgets. Beyond the basic Shrink / Grow animations, the package is infused with carefully optimized interaction behaviors. Major apps like the App Store, GitHub, and Slack have adopted similar touch interactions, and ZoomTapper brings you refined interaction logic inspired by a thorough analysis of these leading applications.</p><br> <p align="center"> <a href="https://flutter.dev"> <img src="https://img.shields.io/badge/Platform-Flutter-02569B?logo=flutter" alt="Platform" /> </a> <a href=""> <img src="https://img.shields.io/pub/v/zoom_tapper" alt="Pub Package"/> </a> <a href="https://opensource.org/licenses/MIT"> <img src="https://img.shields.io/github/license/aagarwal1012/animated-text-kit?color=red" alt="License: MIT" /> </a> </p><br>
+<p align="center"><img src="https://velog.velcdn.com/images/ximya_hf/post/9e804f0a-6988-4157-8db9-c42ffc48be20/image.png"/></p><p align="center"> ZoomTapper allows you to effortlessly apply smooth Zoom (Shrink/Grow) touch animations to your widgets. Beyond the basic Shrink/Grow animations, the package is infused with carefully optimized interaction behaviors. Major apps like the App Store, GitHub, and Slack have adopted similar touch interactions, and ZoomTapper brings you refined interaction logic inspired by a thorough analysis of these leading applications.</p><br> <p align="center"> <a href="https://flutter.dev"> <img src="https://img.shields.io/badge/Platform-Flutter-02569B?logo=flutter" alt="Platform" /> </a> <a href=""> <img src="https://img.shields.io/pub/v/zoom_tapper" alt="Pub Package"/> </a> <a href="https://opensource.org/licenses/MIT"> <img src="https://img.shields.io/github/license/aagarwal1012/animated-text-kit?color=red" alt="License: MIT" /> </a> </p><br>
 
 # Demo
 
@@ -51,7 +51,7 @@ import 'package:zoom_tapper/zoom_tapper.dart';
 
 # Usage
 
-1. It's incredibly simple. Just wrap the widget you want to apply the Shrink / Grow touch interaction to with ZoomTapper.
+1. It's incredibly simple. Just wrap the widget you want to apply the Shrink/Grow touch interaction to with ZoomTapper.
 
 ```dart
 ZoomTapper(  
@@ -80,13 +80,13 @@ ZoomTapper(
 )
 ```
 
-The `onTap` property is optional, so if your child widget handles touch events on its own, the Shrink / Grow animation will still be triggered even without passing a touch event to ZoomTapper.
+The `onTap` property is optional, so if your child widget handles touch events on its own, the Shrink/Grow animation will still be triggered even without passing a touch event to ZoomTapper.
 
 <br>
 
 # Features
 
-ZoomTapper not only offers Shrink / Grow touch animations but also provides various finely-tuned features.
+ZoomTapper not only offers Shrink/Grow touch animations but also provides various finely-tuned features.
 
 ## 1. Cancel ongoing interaction when scrolling
 
@@ -104,9 +104,9 @@ ZoomTapper works similarly by detecting scroll events from parent widgets and ca
 
 <br>
 
-## 2. Customize Shrink / Grow animation
+## 2. Customize Shrink/Grow animation
 
-You can customize several aspects of the Shrink / Grow animation, such as the animation duration and the shrink size.
+You can customize several aspects of the Shrink/Grow animation, such as the animation duration and the shrink size.
 
 <p align="center"><img src="https://velog.velcdn.com/images/ximya_hf/post/668b828e-7771-4bac-845c-c432a406da20/image.png"/></p>
 
@@ -147,7 +147,7 @@ There are a few widgets for which `renderObject` cannot detect the `borderRadius
 
 ## 4. Interaction with parent/child ZoomTapper widgets
 
-There may be cases where you need to apply another ZoomTapper to a child widget within a parent ZoomTapper. In such scenarios, separate touch events are triggered when the child widget is touched and when the parent widget (excluding the child) is touched. Shrink / Grow animations are applied only to the child when it is touched, while the entire parent (including the child) will shrink/grow when the parent is touched.
+There may be cases where you need to apply another ZoomTapper to a child widget within a parent ZoomTapper. In such scenarios, separate touch events are triggered when the child widget is touched and when the parent widget (excluding the child) is touched. Shrink/Grow animations are applied only to the child when it is touched, while the entire parent (including the child) will shrink/grow when the parent is touched.
 
 <p align="center"><img src="https://velog.velcdn.com/images/ximya_hf/post/ca879456-5a73-47ad-b1d1-a16d0d6d1c81/image.png"/></p>
 
