@@ -1,5 +1,5 @@
 <h1 align="center">Zoom Tapper</h1>
-<p align="center"><img src="https://velog.velcdn.com/images/ximya_hf/post/9e804f0a-6988-4157-8db9-c42ffc48be20/image.png"/></p><p align="center"> ZoomTapper allows you to effortlessly apply smooth Zoom (Shrink / Grow) touch animations to your widgets. Beyond the basic Shrink / Grow animations, the package is infused with carefully optimized interaction behaviors. Major apps like the App Store, GitHub, and Slack have adopted similar touch interactions, and ZoomTapper brings you refined interaction logic inspired by a thorough analysis of these leading applications.</p><br> <p align="center"> <a href="https://flutter.dev"> <img src="https://img.shields.io/badge/Platform-Flutter-02569B?logo=flutter" alt="Platform" /> </a> <a href=""> <img src="https://img.shields.io/pub/v/easy_isolate_mixin" alt="Pub Package"/> </a> <a href="https://opensource.org/licenses/MIT"> <img src="https://img.shields.io/github/license/aagarwal1012/animated-text-kit?color=red" alt="License: MIT" /> </a> </p><br>
+<p align="center"><img src="https://velog.velcdn.com/images/ximya_hf/post/9e804f0a-6988-4157-8db9-c42ffc48be20/image.png"/></p><p align="center"> ZoomTapper allows you to effortlessly apply smooth Zoom (Shrink / Grow) touch animations to your widgets. Beyond the basic Shrink / Grow animations, the package is infused with carefully optimized interaction behaviors. Major apps like the App Store, GitHub, and Slack have adopted similar touch interactions, and ZoomTapper brings you refined interaction logic inspired by a thorough analysis of these leading applications.</p><br> <p align="center"> <a href="https://flutter.dev"> <img src="https://img.shields.io/badge/Platform-Flutter-02569B?logo=flutter" alt="Platform" /> </a> <a href=""> <img src="https://img.shields.io/pub/v/zoom_tapper" alt="Pub Package"/> </a> <a href="https://opensource.org/licenses/MIT"> <img src="https://img.shields.io/github/license/aagarwal1012/animated-text-kit?color=red" alt="License: MIT" /> </a> </p><br>
 
 # Demo
 
@@ -11,9 +11,9 @@
 # Key Features
 
 - 🔑 Extremely easy to use
-- 🛠 Easily integrates with your existing widgets
-- 🔥 Highly customizable
-- 🥶 Features meticulously designed and highly refined interaction logic
+- 💻 Easily integrates with your existing widgets
+- 🛠 Highly customizable
+- 🔥 Various touch interaction logic carefully considered
 
 <br>
 
