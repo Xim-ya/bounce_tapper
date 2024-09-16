@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 part 'zoom_tapper_event.dart';
+
 part 'target_point.dart';
 
 class ZoomTapper extends StatefulWidget {
@@ -25,7 +26,7 @@ class ZoomTapper extends StatefulWidget {
     this.blockTapOnLongPressEvent = true,
     this.disableZoomOnScroll = true,
   }) : assert(zoomLevel > 0 && zoomLevel <= 1,
-  'zoomLevel must be greater than 0 and less than or equal to 1');
+            'zoomLevel must be greater than 0 and less than or equal to 1');
 
   /// The child widget that will have the shrink/grow animation applied.
   final Widget child;
@@ -123,9 +124,9 @@ class _ZoomTapperState extends State<ZoomTapper>
 
       // Listen for scroll events to trigger the grow animation if enabled.
       if (Scrollable.maybeOf(context)?.widget.controller != null &&
-          !widget.disableZoomOnScroll) {
+          widget.disableZoomOnScroll) {
         Scrollable.of(context).widget.controller!.addListener(
-              () async {
+          () async {
             if (!widget.enable || !_controller.isCompleted) return;
 
             await _controller.reverse();
@@ -148,10 +149,11 @@ class _ZoomTapperState extends State<ZoomTapper>
           _targetPoint = (_targetPoint ?? 0) - 2;
         }
       },
-      onLongPressUp: () {
+      onLongPressUp: () async {
         if (!widget.enable) return;
-        Future.value(widget.onLongPressUp?.call()).whenComplete(() {
+        Future.value(widget.onLongPressUp?.call()).whenComplete(() async {
           if (widget.onLongPressUp != null && widget.blockTapOnLongPressEvent) {
+            await _controller.reverse();
             _targetPoint = null;
           }
         });
@@ -239,7 +241,7 @@ class _ZoomTapperState extends State<ZoomTapper>
                             final opacity = _animation.value == widget.zoomLevel
                                 ? 1.0
                                 : (1.0 - _animation.value) /
-                                (1.0 - widget.zoomLevel);
+                                    (1.0 - widget.zoomLevel);
                             return Opacity(
                               opacity: opacity,
                               child: ColoredBox(
@@ -267,4 +269,3 @@ class _ZoomTapperState extends State<ZoomTapper>
     super.dispose();
   }
 }
-
