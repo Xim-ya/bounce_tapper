@@ -27,7 +27,7 @@ Add the following line to your project's `pubspec.yaml` file under the `dependen
 
 ```yaml
 dependencies:
-  zoom_tapper: ^1.0.0
+  zoom_tapper: ^1.0.1
 ```
 
 2. Install it
