@@ -1,41 +1,23 @@
-<h1 align="center">Easy Isolate Mixin</h1>
-<p align="center"><img src="https://github.com/aagarwal1012/Animated-Text-Kit/assets/75591730/f9d03a37-c830-45d7-9adb-20bb096f942b"/></p>
-<p align="center">The Easy Isolate Mixin is a powerful mixin package designed to streamline the usage of isolates in your Flutter applications. With this Package, you can easily leverage isolates to perform concurrent and computationally intensive tasks without blocking the main thread.</p><br>
+<h1 align="center">Zoom Tapper</h1>
+<p align="center"><img src="https://velog.velcdn.com/images/ximya_hf/post/9e804f0a-6988-4157-8db9-c42ffc48be20/image.png"/></p><p align="center"> ZoomTapper allows you to effortlessly apply smooth Zoom (Shrink / Grow) touch animations to your widgets. Beyond the basic Shrink / Grow animations, the package is infused with carefully optimized interaction behaviors. Major apps like the App Store, GitHub, and Slack have adopted similar touch interactions, and ZoomTapper brings you refined interaction logic inspired by a thorough analysis of these leading applications.</p><br> <p align="center"> <a href="https://flutter.dev"> <img src="https://img.shields.io/badge/Platform-Flutter-02569B?logo=flutter" alt="Platform" /> </a> <a href=""> <img src="https://img.shields.io/pub/v/easy_isolate_mixin" alt="Pub Package"/> </a> <a href="https://opensource.org/licenses/MIT"> <img src="https://img.shields.io/github/license/aagarwal1012/animated-text-kit?color=red" alt="License: MIT" /> </a> </p><br>
 
-<p align="center">
-  <a href="https://flutter.dev">
-    <img src="https://img.shields.io/badge/Platform-Flutter-02569B?logo=flutter"
-      alt="Platform" />
-  </a>
-  <a href="">
-    <img src="https://img.shields.io/pub/v/easy_isolate_mixin"
-      alt="Pub Package"/>
-  </a>
-  <a href="https://opensource.org/licenses/MIT">
-    <img src="https://img.shields.io/github/license/aagarwal1012/animated-text-kit?color=red"
-      alt="License: MIT" />
-  </a>
+# Demo
 
-
-</p><br>
-
-
-
-
+<p align="center"><img src="https://velog.velcdn.com/images/ximya_hf/post/5e5aa87f-4d09-474a-b27a-c756a63cccc7/image.gif"/></p>
+<p align="center">Can apply exactly the same touch interactions as in the demo apps.</p>
 # Key Features
 
 
-*   🔑  Extremely easy to use
-*   👨‍👦‍👦  Efficient Isolate Management
-*   🔥  Enhanced Performance
-*   🥶  Prevents your UI from freezing
-*   🛠  Scalability enabled by mixins
 
+- 🔑 Extremely easy to use
+- 🛠 Easily integrates with your existing widgets
+- 🔥 Highly customizable
+- 🥶 Features meticulously designed and highly refined interaction logic
 
 
 # Installing
 
-To use the Easy Isolate Mixin package in your Flutter project, follow these steps:
+To use the Easy ZoomTapper package in your Flutter project, follow these steps:
 
 1. Depend on it
 
@@ -43,7 +25,7 @@ Add the following line to your project's `pubspec.yaml` file under the `dependen
 
 ```yaml
 dependencies:
-  easy_isolate_mixin: ^1.0.0
+  zoom_tapper: ^1.0.0
 ```
 
 2. Install it
@@ -59,56 +41,125 @@ $ flutter pub get
 Add the following import statement to your Dart code:
 
 ```dart
-import 'package:easy_isolate_mixin/easy_isolate_mixin.dart';
+import 'package:zoom_tapper/zoom_tapper.dart';
 ```
 
 # Usage
 
-1. Import the package:
+1. It's incredibly simple. Just wrap the widget you want to apply the Shrink / Grow touch interaction to with ZoomTapper.
 
 ```dart
-import 'package:easy_isolate_mixin/easy_isolate_mixin.dart';
+ZoomTapper(  
+  onTap: () {},  
+  child: Card(),  
+)
+ZoomTapper(  
+  child: YourCustomWidget()  
+)
 ```
 
-
-2. Create a class and mixin the `IsolateHelperMixin`:
+2. Pass the necessary touch events to the `onTap` method. If you have an existing custom widget that handles touch events, you can skip passing an `onTap` event directly.
 
 ```dart
-class Service with IsolateHelperMixin {
-  // Your methods and logic here
-}
+/// 1. Executes the touch event inside ZoomTapper
+ZoomTapper(  
+  onTap: () {
+      /// Touch Event!
+  },  
+  child: CustomWidget(),  
+)
+
+/// 2. Listens to the child widget's touch event and executes it
+ZoomTapper(  
+  child: CustomButton(), 
+)
 ```
 
-3. Use the `loadWithIsolate()` method to perform expensive work:
+The `onTap` property is optional, so if your child widget handles touch events on its own, the Shrink / Grow animation will still be triggered even without passing a touch event to ZoomTapper.
 
-```dart
-class Service with IsolateHelperMixin {
-  Future<void> performExpensiveWork() async {
-    final result = await loadWithIsolate(() async{
-      // Perform your expensive work here
-      // Return the result
-    });
-    
-  }
-}
-```
+# Features
 
-In the `performExpensiveWork()` method, you can use the `loadWithIsolate()` method from the `IsolateHelperMixin` to perform your expensive work in a separate isolate. Simply pass a function to `loadWithIsolate()` that contains your expensive computation. The result of the computation will be returned as a `Future`.
+ZoomTapper not only offers Shrink / Grow touch animations but also provides various finely-tuned features.
 
-## Handling Big Data
-Here's an example of using `loadWithIsolate()` to fetch a list of `SomeData` objects:
+## 1. Cancel ongoing interaction when scrolling
 
-```dart
-class DataSource with IsolateHelperMixin {
-  Future<List<SomeData>> fetchAmountOfData() => 
-  loadWithIsolate(() => _api.getAmountOfData());
-}
-```
+If you carefully observe the App Store's main page, you’ll notice that when a card view is touched and shrinks, scrolling will cancel the shrink and return the card to its original state without triggering the touch event.
 
-The `_api.getAmountOfData()` function represents your data fetching logic. It will be executed in a separate isolate, allowing your UI to remain responsive while the data is being fetched. The result will be returned as a `Future<List<SomeData>>`.
+<p align="center"><img src="https://velog.velcdn.com/images/ximya_hf/post/126f3e68-ef62-4fe7-a2d6-eade5578ae5f/image.png"/></p>
 
-Note: Make sure the function you pass to `loadWithIsolate()` returns a value or a `Future` that resolves to the desired result type.
+ZoomTapper works similarly by detecting scroll events from parent widgets and canceling the ongoing shrink animation, restoring the widget without triggering a touch event. If you prefer to keep the animation and event active even when scrolling, you can set the `disableGrowOnScroll` property to `false`.
 
-That's it! You can now leverage the power of isolates to perform concurrent and computationally intensive tasks without blocking the main thread.
+> Both vertical and horizontal scroll events are detected.
 
+|Parameter|Default|Description|
+|---|---|---|
+|disableZoomOnScroll|true|Whether to cancel ongoing animation during scroll|
 
+## 2. Customize Shrink / Grow animation
+
+You can customize several aspects of the Shrink / Grow animation, such as the animation duration and the shrink size.
+
+<p align="center"><img src="https://velog.velcdn.com/images/ximya_hf/post/668b828e-7771-4bac-845c-c432a406da20/image.png"/></p>
+
+Although the default property values are set to feel quite natural, you can customize them if necessary.
+
+|Parameter|Default|Description|
+|---|---|---|
+|zoomLevel|0.965|The scale to which the widget shrinks|
+|shrinkDuration|Duration(milliseconds: 160)|Duration of the shrinking animation|
+|growDuration|Duration(milliseconds: 120)|Duration of the growing animation|
+|delayedDurationBeforeGrow|Duration(milliseconds: 60)|Delay before growing to ensure a smooth animation|
+|shrinkCurve|Curves.easeInSine|Curve used for the shrinking animation|
+|growCurve|Curves.easeOutSine|Curve used for the growing animation|
+|enable|true|Whether to enable touch animation and events|
+
+## 3. Highlight effect on touch
+
+Just like `InkWell` or `MaterialButton`, ZoomTapper also provides a highlight effect when the widget is touched, overlaying a color on the widget. You can customize the highlight color using the `highlightColor` property. If you don’t want any highlight effect, simply set it to `Colors.transparent`.
+
+In some cases, using a widget like InkWell on a child widget with a `borderRadius` might cause the highlight to not clip properly, requiring you to wrap it in a `ClipRRect` widget.
+
+<p align="center"><img src="https://velog.velcdn.com/images/ximya_hf/post/a840551b-9b94-4056-a89f-6937a211c89a/image.png"/></p>
+
+However, ZoomTapper automatically detects the nearest `borderRadius` from the child widget’s `renderObject` and clips the corners accordingly.
+
+There are a few widgets for which `renderObject` cannot detect the `borderRadius`. In these cases, you can manually set the `highlightBorderRadius` to clip the highlight box with the correct radius.
+
+> ZoomTapper does not interfere with the highlight touch effects of wrapped widgets like FilledButton or InkWell.
+
+| Parameter             | Default           | Description                           |
+| --------------------- | ----------------- | ------------------------------------- |
+| highlightColor        | Color(0x1F939BAC) | The color overlayed on touch          |
+| highlightBorderRadius | null              | The borderRadius of the highlight box |
+
+## 4. Interaction with parent/child ZoomTapper widgets
+
+There may be cases where you need to apply another ZoomTapper to a child widget within a parent ZoomTapper. In such scenarios, separate touch events are triggered when the child widget is touched and when the parent widget (excluding the child) is touched. Shrink / Grow animations are applied only to the child when it is touched, while the entire parent (including the child) will shrink/grow when the parent is touched.
+
+<p align="center"><img src="https://velog.velcdn.com/images/ximya_hf/post/ca879456-5a73-47ad-b1d1-a16d0d6d1c81/image.png"/></p>
+
+## 5. Support for various touch gestures
+
+In addition to the `onTap` method, ZoomTapper supports gestures like `onLongPress` and `onLongPressUp`. If you assign the `onLongPressUp` event, it prevents the `onTap` event from being executed by default. To allow both `onLongPressUp` and `onTap` to execute, set the `blockTapOnLongPressEvent` property to `false`.
+
+Additionally, if you want to disable touch events and animations entirely, simply set the `enable` property to `false`.
+
+|Parameter|Default|Description|
+|---|---|---|
+|onTap|null|Method to be executed on tap|
+|onLongPress|null|Method to be executed on long press|
+|onLongPressUp|null|Method to be executed when long press is released|
+|blockTapOnLongPressEvent|true|Whether to block `onTap` when `onLongPressUp` is executed|
+|enable|true|Whether to enable touch animations and events|
+
+## 6. Prevent multiple and rapid touches
+
+By default, the ZoomTapper package prevents multiple rapid touches and simultaneous touches, ensuring that touch events aren’t triggered multiple times. If multiple ZoomTapper widgets are touched at the same time, only the one that was touched first will trigger its animation and event.
+
+<p align="center"><img src="https://velog.velcdn.com/images/ximya_hf/post/47678de9-a75d-4c6e-b3e8-57a65142bd9a/image.png"/></p>
+
+## 7. Interaction when touch moves outside the touch area
+
+If the widget is touched and shrinks, but the touch point moves outside the widget’s touch area, the ongoing animation will be canceled and the widget will grow back to its original size. And the touch event will not be triggered.
+
+<p align="center"><img src="https://velog.velcdn.com/images/ximya_hf/post/2b9267a5-a8e6-42aa-8b2b-27116adb7968/image.png"/></p>
