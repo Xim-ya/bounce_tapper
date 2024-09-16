@@ -5,15 +5,17 @@
 
 <p align="center"><img src="https://velog.velcdn.com/images/ximya_hf/post/5e5aa87f-4d09-474a-b27a-c756a63cccc7/image.gif"/></p>
 <p align="center">Can apply exactly the same touch interactions as in the demo apps.</p>
+
+<br>
+
 # Key Features
-
-
 
 - 🔑 Extremely easy to use
 - 🛠 Easily integrates with your existing widgets
 - 🔥 Highly customizable
 - 🥶 Features meticulously designed and highly refined interaction logic
 
+<br>
 
 # Installing
 
@@ -43,6 +45,9 @@ Add the following import statement to your Dart code:
 ```dart
 import 'package:zoom_tapper/zoom_tapper.dart';
 ```
+
+
+<br>
 
 # Usage
 
@@ -77,6 +82,8 @@ ZoomTapper(
 
 The `onTap` property is optional, so if your child widget handles touch events on its own, the Shrink / Grow animation will still be triggered even without passing a touch event to ZoomTapper.
 
+<br>
+
 # Features
 
 ZoomTapper not only offers Shrink / Grow touch animations but also provides various finely-tuned features.
@@ -95,6 +102,8 @@ ZoomTapper works similarly by detecting scroll events from parent widgets and ca
 |---|---|---|
 |disableZoomOnScroll|true|Whether to cancel ongoing animation during scroll|
 
+<br>
+
 ## 2. Customize Shrink / Grow animation
 
 You can customize several aspects of the Shrink / Grow animation, such as the animation duration and the shrink size.
@@ -112,6 +121,8 @@ Although the default property values are set to feel quite natural, you can cust
 |shrinkCurve|Curves.easeInSine|Curve used for the shrinking animation|
 |growCurve|Curves.easeOutSine|Curve used for the growing animation|
 |enable|true|Whether to enable touch animation and events|
+
+<br>
 
 ## 3. Highlight effect on touch
 
@@ -132,11 +143,15 @@ There are a few widgets for which `renderObject` cannot detect the `borderRadius
 | highlightColor        | Color(0x1F939BAC) | The color overlayed on touch          |
 | highlightBorderRadius | null              | The borderRadius of the highlight box |
 
+<br>
+
 ## 4. Interaction with parent/child ZoomTapper widgets
 
 There may be cases where you need to apply another ZoomTapper to a child widget within a parent ZoomTapper. In such scenarios, separate touch events are triggered when the child widget is touched and when the parent widget (excluding the child) is touched. Shrink / Grow animations are applied only to the child when it is touched, while the entire parent (including the child) will shrink/grow when the parent is touched.
 
 <p align="center"><img src="https://velog.velcdn.com/images/ximya_hf/post/ca879456-5a73-47ad-b1d1-a16d0d6d1c81/image.png"/></p>
+
+<br>
 
 ## 5. Support for various touch gestures
 
@@ -152,11 +167,15 @@ Additionally, if you want to disable touch events and animations entirely, simpl
 |blockTapOnLongPressEvent|true|Whether to block `onTap` when `onLongPressUp` is executed|
 |enable|true|Whether to enable touch animations and events|
 
+<br>
+
 ## 6. Prevent multiple and rapid touches
 
 By default, the ZoomTapper package prevents multiple rapid touches and simultaneous touches, ensuring that touch events aren’t triggered multiple times. If multiple ZoomTapper widgets are touched at the same time, only the one that was touched first will trigger its animation and event.
 
 <p align="center"><img src="https://velog.velcdn.com/images/ximya_hf/post/47678de9-a75d-4c6e-b3e8-57a65142bd9a/image.png"/></p>
+
+<br>
 
 ## 7. Interaction when touch moves outside the touch area
 
