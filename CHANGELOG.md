@@ -17,3 +17,7 @@
 ## 1.0.4
 
 * Update README
+
+## 1.0.5
+
+* Fixed the error in finding the borderRadius for the highlight box.
