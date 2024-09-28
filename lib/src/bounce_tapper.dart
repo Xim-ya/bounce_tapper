@@ -89,7 +89,7 @@ class _BounceTapperState extends State<BounceTapper>
   Size touchAreaSize = Size.zero;
 
   /// Target border radius for the child widget.
-  BorderRadiusGeometry? targetRadius;
+  BorderRadiusGeometry? autoDetectedRadius;
 
   @override
   void initState() {
@@ -112,7 +112,7 @@ class _BounceTapperState extends State<BounceTapper>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Get the target border radius after the frame is rendered.
       if (widget.highlightBorderRadius == null) {
-        targetRadius = getChildBorderCloseBorderRadius(context);
+        autoDetectedRadius = getChildBorderCloseBorderRadius(context);
       }
 
       // Measure the size of the touch area.
@@ -125,7 +125,9 @@ class _BounceTapperState extends State<BounceTapper>
           widget.disableBounceOnScroll) {
         Scrollable.of(context).widget.controller!.addListener(
           () async {
-            if (!widget.enable || !_controller.isCompleted) return;
+            if (!widget.enable ||
+                !_controller.isCompleted ||
+                _targetPoint == null) return;
 
             await _controller.reverse();
             _targetPoint = null;
@@ -174,8 +176,10 @@ class _BounceTapperState extends State<BounceTapper>
         /// When a pointer touches the display.
         /// Start the shrink animation.
         onPointerDown: (event) async {
+          print(event.pointer - (_targetPoint ?? 0) < 4);
           if (!widget.enable ||
-              _targetPoint != null ||
+              (_targetPoint != null &&
+                  event.pointer - (_targetPoint ?? 0) < 4) ||
               _controller.isAnimating) {
             return;
           }
@@ -208,6 +212,7 @@ class _BounceTapperState extends State<BounceTapper>
             return;
           }
 
+          await _controller.reverse();
           _targetPoint = null;
         },
 
@@ -229,8 +234,8 @@ class _BounceTapperState extends State<BounceTapper>
                   // Highlight color overlay.
                   Positioned.fill(
                     child: ClipRRect(
-                      borderRadius: targetRadius ??
-                          widget.highlightBorderRadius ??
+                      borderRadius: widget.highlightBorderRadius ??
+                          autoDetectedRadius ??
                           BorderRadius.zero,
                       child: IgnorePointer(
                         child: AnimatedBuilder(
