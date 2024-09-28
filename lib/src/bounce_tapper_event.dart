@@ -18,9 +18,11 @@ mixin class _Event {
       void inspectElement(Element element) {
         final renderObject = element.renderObject;
         if (renderObject is RenderBox) {
-          final borderRadius = _getBorderRadiusFromRenderObject(renderObject);
-          if (borderRadius != null && borderRadius != BorderRadius.zero) {
-            closestBorderRadius = borderRadius;
+          final renderInfo = _getRenderInfoFromRenderObject(renderObject);
+          if (context.size == renderInfo.size &&
+              renderInfo.borderRadius != null &&
+              renderInfo.borderRadius != BorderRadius.zero) {
+            closestBorderRadius = renderInfo.borderRadius;
             return;
           }
         }
@@ -42,22 +44,22 @@ mixin class _Event {
   }
 
   /// Extracts BorderRadius from various types of RenderBox.
-  BorderRadiusGeometry? _getBorderRadiusFromRenderObject(
-      RenderBox renderObject) {
+  ({Size size, BorderRadiusGeometry? borderRadius})
+      _getRenderInfoFromRenderObject(RenderBox renderObject) {
     if (renderObject is RenderClipRRect) {
-      return renderObject.borderRadius;
+      return (size: renderObject.size, borderRadius: renderObject.borderRadius);
     }
     if (renderObject is RenderPhysicalModel) {
-      return renderObject.borderRadius;
+      return (size: renderObject.size, borderRadius: renderObject.borderRadius);
     }
     if (renderObject is RenderDecoratedBox) {
       final decoration = renderObject.decoration;
       if (decoration is BoxDecoration) {
-        return decoration.borderRadius;
+        return (size: renderObject.size, borderRadius: decoration.borderRadius);
       } else if (decoration is ShapeDecoration) {
         final shape = decoration.shape;
         if (shape is RoundedRectangleBorder) {
-          return shape.borderRadius;
+          return (size: renderObject.size, borderRadius: shape.borderRadius);
         }
       }
     }
@@ -66,10 +68,10 @@ mixin class _Event {
       if (clipper is ShapeBorderClipper) {
         final shape = clipper.shape;
         if (shape is RoundedRectangleBorder) {
-          return shape.borderRadius;
+          return (size: renderObject.size, borderRadius: shape.borderRadius);
         }
       }
     }
-    return null;
+    return (size: renderObject.size, borderRadius: null);
   }
 }
