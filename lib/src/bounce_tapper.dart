@@ -26,7 +26,7 @@ class BounceTapper extends StatefulWidget {
     this.blockTapOnLongPressEvent = true,
     this.disableBounceOnScroll = true,
   }) : assert(shrinkScaleFactor > 0 && shrinkScaleFactor <= 1,
-            'shrinkScaleFactor must be greater than 0 and less than or equal to 1');
+  'shrinkScaleFactor must be greater than 0 and less than or equal to 1');
 
   /// The child widget that will have the shrink/grow animation applied.
   final Widget child;
@@ -85,11 +85,11 @@ class _BounceTapperState extends State<BounceTapper>
   /// Key for the touch area widget.
   final GlobalKey _touchAreaKey = GlobalKey();
 
-  /// Size of the touchable area.
-  Size touchAreaSize = Size.zero;
+  // /// Size of the touchable area.
+  // Size touchAreaSize = Size.zero;
 
   /// Target border radius for the child widget.
-  BorderRadiusGeometry? autoDetectedRadius;
+  BorderRadiusGeometry? targetRadius;
 
   @override
   void initState() {
@@ -112,19 +112,14 @@ class _BounceTapperState extends State<BounceTapper>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Get the target border radius after the frame is rendered.
       if (widget.highlightBorderRadius == null) {
-        autoDetectedRadius = getChildBorderCloseBorderRadius(context);
-      }
-
-      // Measure the size of the touch area.
-      if (_touchAreaKey.currentContext != null) {
-        touchAreaSize = _touchAreaKey.currentContext!.size ?? Size.zero;
+        targetRadius = getChildBorderCloseBorderRadius(context);
       }
 
       // Listen for scroll events to trigger the grow animation if enabled.
       if (Scrollable.maybeOf(context)?.widget.controller != null &&
           widget.disableBounceOnScroll) {
         Scrollable.of(context).widget.controller!.addListener(
-          () async {
+              () async {
             if (!widget.enable ||
                 !_controller.isCompleted ||
                 _targetPoint == null) return;
@@ -159,13 +154,17 @@ class _BounceTapperState extends State<BounceTapper>
         });
       },
       child: Listener(
+        behavior: HitTestBehavior.translucent,
+
         /// When a pointer moves within the widget.
         /// If the pointer moves outside the touch area, trigger the grow animation.
         onPointerMove: (event) async {
           if (!widget.enable) return;
 
           if (!isWithinBounds(
-              position: event.localPosition, touchAreaSize: touchAreaSize)) {
+            position: event.localPosition,
+            touchAreaSize: _touchAreaKey.currentContext?.size ?? Size.zero,
+          )) {
             if (_controller.isCompleted) {
               await _controller.reverse();
               _targetPoint = null;
@@ -176,10 +175,8 @@ class _BounceTapperState extends State<BounceTapper>
         /// When a pointer touches the display.
         /// Start the shrink animation.
         onPointerDown: (event) async {
-          print(event.pointer - (_targetPoint ?? 0) < 4);
           if (!widget.enable ||
-              (_targetPoint != null &&
-                  event.pointer - (_targetPoint ?? 0) < 4) ||
+              _targetPoint != null ||
               _controller.isAnimating) {
             return;
           }
@@ -204,7 +201,7 @@ class _BounceTapperState extends State<BounceTapper>
           // If the pointer was lifted within the bounds of the touch area, trigger the onTap callback.
           if (isWithinBounds(
             position: event.localPosition,
-            touchAreaSize: touchAreaSize,
+            touchAreaSize: _touchAreaKey.currentContext?.size ?? Size.zero,
           )) {
             await Future.value(widget.onTap?.call()).whenComplete(() {
               _targetPoint = null;
@@ -234,18 +231,18 @@ class _BounceTapperState extends State<BounceTapper>
                   // Highlight color overlay.
                   Positioned.fill(
                     child: ClipRRect(
-                      borderRadius: widget.highlightBorderRadius ??
-                          autoDetectedRadius ??
+                      borderRadius: targetRadius ??
+                          widget.highlightBorderRadius ??
                           BorderRadius.zero,
                       child: IgnorePointer(
                         child: AnimatedBuilder(
                           animation: _animation,
                           builder: (context, child) {
                             final opacity =
-                                _animation.value == widget.shrinkScaleFactor
-                                    ? 1.0
-                                    : (1.0 - _animation.value) /
-                                        (1.0 - widget.shrinkScaleFactor);
+                            _animation.value == widget.shrinkScaleFactor
+                                ? 1.0
+                                : (1.0 - _animation.value) /
+                                (1.0 - widget.shrinkScaleFactor);
                             return Opacity(
                               opacity: opacity,
                               child: ColoredBox(

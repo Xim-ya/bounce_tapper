@@ -21,3 +21,13 @@
 ## 1.0.5
 
 * Fixed the error in finding the borderRadius for the highlight box.
+
+## 1.0.5
+
+* Fixed the error in finding the borderRadius for the highlight box.
+
+
+## 1.0.5
+
+* Fixed the issue where touch events on a lower bounceTapper widget were not triggered when an upper bounceTapper widget was present due to touch area not being captured.****
+
