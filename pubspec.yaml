@@ -1,6 +1,6 @@
 name: bounce_tapper
 description: "Smooth on-tap bounce (shrink/grow) animation that can easily enhance user touch interactions."
-version: 1.0.6
+version: 1.0.7
 homepage: https://github.com/Xim-ya/bounce_tapper
 
 environment:

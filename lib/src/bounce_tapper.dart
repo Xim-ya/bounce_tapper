@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 part 'bounce_tapper_event.dart';
-
 part 'target_point.dart';
 
 class BounceTapper extends StatefulWidget {
@@ -26,7 +25,7 @@ class BounceTapper extends StatefulWidget {
     this.blockTapOnLongPressEvent = true,
     this.disableBounceOnScroll = true,
   }) : assert(shrinkScaleFactor > 0 && shrinkScaleFactor <= 1,
-  'shrinkScaleFactor must be greater than 0 and less than or equal to 1');
+            'shrinkScaleFactor must be greater than 0 and less than or equal to 1');
 
   /// The child widget that will have the shrink/grow animation applied.
   final Widget child;
@@ -119,9 +118,9 @@ class _BounceTapperState extends State<BounceTapper>
       if (Scrollable.maybeOf(context)?.widget.controller != null &&
           widget.disableBounceOnScroll) {
         Scrollable.of(context).widget.controller!.addListener(
-              () async {
+          () async {
             if (!widget.enable ||
-                !_controller.isCompleted ||
+                !_controller.isForwardOrCompleted ||
                 _targetPoint == null) return;
 
             await _controller.reverse();
@@ -239,10 +238,10 @@ class _BounceTapperState extends State<BounceTapper>
                           animation: _animation,
                           builder: (context, child) {
                             final opacity =
-                            _animation.value == widget.shrinkScaleFactor
-                                ? 1.0
-                                : (1.0 - _animation.value) /
-                                (1.0 - widget.shrinkScaleFactor);
+                                _animation.value == widget.shrinkScaleFactor
+                                    ? 1.0
+                                    : (1.0 - _animation.value) /
+                                        (1.0 - widget.shrinkScaleFactor);
                             return Opacity(
                               opacity: opacity,
                               child: ColoredBox(
