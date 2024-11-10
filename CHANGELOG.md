@@ -31,7 +31,11 @@
 
 * Fixed the issue where touch events on a lower bounceTapper widget were not triggered when an upper bounceTapper widget was present due to touch area not being captured.****
 
-## 1.0.7
 
+## 1.0.7
+* Fix disable on Scroll Issue
+
+
+## 1.0.8
 * Fixed an issue where the onTap event in BounceTapper would not trigger if an enclosed widget with a gesture event, such as onLongPress, was active.
 

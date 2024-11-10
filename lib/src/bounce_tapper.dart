@@ -125,7 +125,7 @@ class _BounceTapperState extends State<BounceTapper>
         Scrollable.of(context).widget.controller!.addListener(
               () async {
             if (!widget.enable ||
-                !_controller.isCompleted ||
+                !_controller.isForwardOrCompleted ||
                 _targetPoint == null) return;
 
             await _controller.reverse();
