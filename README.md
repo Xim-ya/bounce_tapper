@@ -27,7 +27,7 @@ Add the following line to your project's `pubspec.yaml` file under the `dependen
 
 ```yaml
 dependencies:
-  bounce_tapper: ^1.0.6
+  bounce_tapper: ^1.0.7
 ```
 
 2. Install it
@@ -149,13 +149,13 @@ There are a few widgets for which `renderObject` cannot detect the `borderRadius
 
 There may be cases where you need to apply another BounceTapper to a child widget within a parent BounceTapper. In such scenarios, separate touch events are triggered when the child widget is touched and when the parent widget (excluding the child) is touched. Shrink/Grow animations are applied only to the child when it is touched, while the entire parent (including the child) will shrink/grow when the parent is touched.
 
-<p align="center"><img src="https://velog.velcdn.com/images/ximya_hf/post/ca879456-5a73-47ad-b1d1-a16d0d6d1c81/image.png"/></p>
+<p align="center"><img src="https://velog.velcdn.com/images/ximya_hf/post/be38ae40-3b3f-443b-8aa1-66b507323ab1/image.png"/></p>
 
 <br>
 
 ## 5. Support for various touch gestures
 
-In addition to the `onTap` method, BounceTapper supports gestures like `onLongPress` and `onLongPressUp`. If you assign the `onLongPressUp` event, it prevents the `onTap` event from being executed by default. To allow both `onLongPressUp` and `onTap` to execute, set the `blockTapOnLongPressEvent` property to `false`.
+In addition to the `onTap` method, BounceTapper supports gestures like `onLongPress` and `onLongPressUp`. However, you can only assign either `onTap` or `onLongPressUp`, not both. Attempting to set both will result in an assertion error to prevent conflicting interactions.
 
 Additionally, if you want to disable touch events and animations entirely, simply set the `enable` property to `false`.
 
@@ -164,7 +164,6 @@ Additionally, if you want to disable touch events and animations entirely, simpl
 |onTap|null|Method to be executed on tap|
 |onLongPress|null|Method to be executed on long press|
 |onLongPressUp|null|Method to be executed when long press is released|
-|blockTapOnLongPressEvent|true|Whether to block `onTap` when `onLongPressUp` is executed|
 |enable|true|Whether to enable touch animations and events|
 
 <br>

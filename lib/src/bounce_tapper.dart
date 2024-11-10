@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -91,6 +92,9 @@ class _BounceTapperState extends State<BounceTapper>
   /// Target border radius for the child widget.
   BorderRadiusGeometry? targetRadius;
 
+  Timer? _longPressTimer;
+  bool _isLongPressed = false;
+
   @override
   void initState() {
     super.initState();
@@ -125,7 +129,7 @@ class _BounceTapperState extends State<BounceTapper>
                 _targetPoint == null) return;
 
             await _controller.reverse();
-            _targetPoint = null;
+            resetProcessConfigs(this);
           },
         );
       }
@@ -134,131 +138,112 @@ class _BounceTapperState extends State<BounceTapper>
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onLongPress: () {
+    return Listener(
+      behavior: HitTestBehavior.translucent,
+
+      /// When a pointer moves within the widget.
+      /// If the pointer moves outside the touch area, trigger the grow animation.
+      onPointerMove: (event) async {
         if (!widget.enable) return;
-        widget.onLongPress?.call();
-        if (widget.enable &&
-            widget.onLongPressUp != null &&
-            widget.blockTapOnLongPressEvent) {
-          _targetPoint = (_targetPoint ?? 0) - 2;
+
+        if (!isWithinBounds(
+          position: event.localPosition,
+          touchAreaSize: _touchAreaKey.currentContext?.size ?? Size.zero,
+        )) {
+          if (_controller.isCompleted) {
+            await _controller.reverse();
+            resetProcessConfigs(this);
+          }
         }
       },
-      onLongPressUp: () async {
-        if (!widget.enable) return;
-        Future.value(widget.onLongPressUp?.call()).whenComplete(() async {
-          if (widget.onLongPressUp != null && widget.blockTapOnLongPressEvent) {
-            await _controller.reverse();
-            _targetPoint = null;
-          }
-        });
-      },
-      child: Listener(
-        behavior: HitTestBehavior.translucent,
 
-        /// When a pointer moves within the widget.
-        /// If the pointer moves outside the touch area, trigger the grow animation.
-        onPointerMove: (event) async {
-          if (!widget.enable) return;
+      /// When a pointer touches the display.
+      /// Start the shrink animation and initialize the long press timer.
+      onPointerDown: (event) async {
+        if (!widget.enable || _targetPoint != null || _controller.isAnimating) {
+          return;
+        }
 
-          if (!isWithinBounds(
-            position: event.localPosition,
-            touchAreaSize: _touchAreaKey.currentContext?.size ?? Size.zero,
-          )) {
-            if (_controller.isCompleted) {
-              await _controller.reverse();
-              _targetPoint = null;
+        _targetPoint = event.pointer;
+        _controller.forward();
+
+        if (widget.onLongPress != null || widget.onLongPressUp != null) {
+          // Start long press timer
+          _longPressTimer = Timer(const Duration(milliseconds: 500), () {
+            if (widget.onLongPress != null) {
+              widget.onLongPress!();
+              _isLongPressed = true;
             }
+          });
+        }
+      },
+
+      /// When a pointer is lifted from the display.
+      /// If lifted within the touch area, trigger the onTap or onLongPressUp callback and grow animation.
+      onPointerUp: (event) async {
+        if (!widget.enable ||
+            _controller.isDismissed ||
+            _targetPoint != event.pointer) return;
+
+        await _controller.forward();
+        await Future.delayed(widget.delayedDurationBeforeGrow);
+
+        _controller.reverse();
+
+        Future.microtask(() async {
+          if (_isLongPressed && widget.onLongPressUp != null) {
+            await Future.value(widget.onLongPressUp!());
+          } else if (widget.onTap != null) {
+            await Future.value(widget.onTap!());
           }
-        },
+        }).whenComplete(() => resetProcessConfigs(this));
+      },
 
-        /// When a pointer touches the display.
-        /// Start the shrink animation.
-        onPointerDown: (event) async {
-          if (!widget.enable ||
-              _targetPoint != null ||
-              _controller.isAnimating) {
-            return;
-          }
+      /// Build the widget with the shrink/grow animation applied.
+      child: AnimatedBuilder(
+        animation: _animation,
+        child: widget.child,
+        builder: (context, child) {
+          return Transform.scale(
+            key: _touchAreaKey,
+            alignment: Alignment.center,
+            scale: widget.enable ? _animation.value : 1.0,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                // The child widget.
+                child!,
 
-          _targetPoint = event.pointer;
-          _controller.forward();
-        },
-
-        /// When a pointer is lifted from the display.
-        /// If lifted within the touch area, trigger the onTap callback and grow animation.
-        onPointerUp: (event) async {
-          if (!widget.enable ||
-              _controller.isDismissed ||
-              _targetPoint != event.pointer) return;
-
-          // Wait for the shrink animation to finish before starting the grow animation.
-          await _controller.forward();
-          await Future.delayed(widget.delayedDurationBeforeGrow);
-
-          _controller.reverse();
-
-          // If the pointer was lifted within the bounds of the touch area, trigger the onTap callback.
-          if (isWithinBounds(
-            position: event.localPosition,
-            touchAreaSize: _touchAreaKey.currentContext?.size ?? Size.zero,
-          )) {
-            await Future.value(widget.onTap?.call()).whenComplete(() {
-              _targetPoint = null;
-            });
-            return;
-          }
-
-          await _controller.reverse();
-          _targetPoint = null;
-        },
-
-        /// Build the widget with the shrink/grow animation applied.
-        child: AnimatedBuilder(
-          animation: _animation,
-          child: widget.child,
-          builder: (context, child) {
-            return Transform.scale(
-              key: _touchAreaKey,
-              alignment: Alignment.center,
-              scale: widget.enable ? _animation.value : 1.0,
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  // The child widget.
-                  child!,
-
-                  // Highlight color overlay.
-                  Positioned.fill(
-                    child: ClipRRect(
-                      borderRadius: targetRadius ??
-                          widget.highlightBorderRadius ??
-                          BorderRadius.zero,
-                      child: IgnorePointer(
-                        child: AnimatedBuilder(
-                          animation: _animation,
-                          builder: (context, child) {
-                            final opacity =
-                            _animation.value == widget.shrinkScaleFactor
-                                ? 1.0
-                                : (1.0 - _animation.value) /
-                                (1.0 - widget.shrinkScaleFactor);
-                            return Opacity(
-                              opacity: opacity,
-                              child: ColoredBox(
-                                color: widget.highlightColor,
-                              ),
-                            );
-                          },
-                        ),
+                // Highlight color overlay.
+                Positioned.fill(
+                  child: ClipRRect(
+                    borderRadius: targetRadius ??
+                        widget.highlightBorderRadius ??
+                        BorderRadius.zero,
+                    child: IgnorePointer(
+                      child: AnimatedBuilder(
+                        animation: _animation,
+                        builder: (context, child) {
+                          final opacity =
+                          _animation.value == widget.shrinkScaleFactor
+                              ? 1.0
+                              : (1.0 - _animation.value) /
+                              (1.0 - widget.shrinkScaleFactor);
+                          return Opacity(
+                            opacity: opacity,
+                            child: ColoredBox(
+                              color: widget.highlightColor,
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ),
-                ],
-              ),
-            );
-          },
-        ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -267,6 +252,7 @@ class _BounceTapperState extends State<BounceTapper>
   void dispose() {
     _controller.stop();
     _controller.dispose();
+    _longPressTimer?.cancel();
     super.dispose();
   }
 }

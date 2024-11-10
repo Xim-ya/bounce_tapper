@@ -74,4 +74,11 @@ mixin class _Event {
     }
     return (size: renderObject.size, borderRadius: null);
   }
+
+  /// Resets the process configuration settings for the bounce animation widget.
+  void resetProcessConfigs(_BounceTapperState widget) {
+    widget._longPressTimer?.cancel();
+    widget._isLongPressed = false;
+    _targetPoint = null;
+  }
 }
