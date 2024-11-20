@@ -39,3 +39,6 @@
 ## 1.0.8
 * Fixed an issue where the onTap event in BounceTapper would not trigger if an enclosed widget with a gesture event, such as onLongPress, was active.
 
+
+## 1.0.9
+* Improved handling of nested scroll views and gesture conflicts.

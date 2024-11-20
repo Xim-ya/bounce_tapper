@@ -26,8 +26,9 @@ class BounceTapper extends StatefulWidget {
     this.enable = true,
     this.blockTapOnLongPressEvent = true,
     this.disableBounceOnScroll = true,
+    this.scrollController,
   }) : assert(shrinkScaleFactor > 0 && shrinkScaleFactor <= 1,
-  'shrinkScaleFactor must be greater than 0 and less than or equal to 1');
+            'shrinkScaleFactor must be greater than 0 and less than or equal to 1');
 
   /// The child widget that will have the shrink/grow animation applied.
   final Widget child;
@@ -70,6 +71,12 @@ class BounceTapper extends StatefulWidget {
   ///
   /// If set to [true], the tap event will not be triggered after a long press.
   final bool blockTapOnLongPressEvent;
+
+  /// Scroll controller for handling interactions during scrolling.
+  ///
+  /// If this is not provided, the widget tries to use the nearest available scroll controller.
+  /// When nesting multiple scroll views, this property should be explicitly set.
+  final ScrollController? scrollController;
 
   @override
   State<StatefulWidget> createState() => _BounceTapperState();
@@ -119,11 +126,13 @@ class _BounceTapperState extends State<BounceTapper>
         targetRadius = getChildBorderCloseBorderRadius(context);
       }
 
+      final targetScrollController = widget.scrollController ??
+          Scrollable.maybeOf(context)?.widget.controller;
+
       // Listen for scroll events to trigger the grow animation if enabled.
-      if (Scrollable.maybeOf(context)?.widget.controller != null &&
-          widget.disableBounceOnScroll) {
-        Scrollable.of(context).widget.controller!.addListener(
-              () async {
+      if (targetScrollController != null && widget.disableBounceOnScroll) {
+        targetScrollController.addListener(
+          () async {
             if (!widget.enable ||
                 !_controller.isForwardOrCompleted ||
                 _targetPoint == null) return;
@@ -225,10 +234,10 @@ class _BounceTapperState extends State<BounceTapper>
                         animation: _animation,
                         builder: (context, child) {
                           final opacity =
-                          _animation.value == widget.shrinkScaleFactor
-                              ? 1.0
-                              : (1.0 - _animation.value) /
-                              (1.0 - widget.shrinkScaleFactor);
+                              _animation.value == widget.shrinkScaleFactor
+                                  ? 1.0
+                                  : (1.0 - _animation.value) /
+                                      (1.0 - widget.shrinkScaleFactor);
                           return Opacity(
                             opacity: opacity,
                             child: ColoredBox(
