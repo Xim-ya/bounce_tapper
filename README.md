@@ -23,11 +23,12 @@ To use the Easy BounceTapper package in your Flutter project, follow these steps
 
 1. Depend on it
 
-Add the following line to your project's `pubspec.yaml` file under the `dependencies` section:  
+Add the following line to your project's `pubspec.yaml` file under the `dependencies` section: 
+> Important: Minor issues exist in versions prior to 1.1.0. It is strongly recommended to use version 1.1.0 or higher.
 
 ```yaml
 dependencies:
-  bounce_tapper: ^1.0.8
+  bounce_tapper: ^1.1.0
 ```
 
 2. Install it
