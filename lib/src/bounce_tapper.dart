@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 part 'bounce_tapper_event.dart';
-
 part 'target_point.dart';
 
 class BounceTapper extends StatefulWidget {
@@ -90,17 +90,40 @@ class _BounceTapperState extends State<BounceTapper>
   /// The shrink and grow animation value.
   late final Animation<double> _animation;
 
+  /// Scroll controller for listening to scroll events and triggering specific actions.
+  late final ScrollController? _scrollController;
+
   /// Key for the touch area widget.
   final GlobalKey _touchAreaKey = GlobalKey();
-
-  // /// Size of the touchable area.
-  // Size touchAreaSize = Size.zero;
 
   /// Target border radius for the child widget.
   BorderRadiusGeometry? targetRadius;
 
+  /// LongPress timer to trigger the onLongPress callback.
   Timer? _longPressTimer;
+
+  /// Whether the long press event has been triggered.
   bool _isLongPressed = false;
+
+  /// Disables bounce animations during scrolling.
+  void _disableBounceOnScroll() async {
+    if (!widget.enable ||
+        !_controller.isForwardOrCompleted ||
+        _targetPoint == null) {
+      return;
+    }
+
+    await _controller.reverse();
+    resetProcessConfigs(this);
+  }
+
+  /// Handles cases where [onPointerUp] is not triggered after [onPointerDown].
+  /// This may occur in rare scenarios, and [_targetPoint] is reset in such cases.
+  void _initializePointerOnException(PointerEvent event) {
+    if (_targetPoint != null && event is PointerCancelEvent) {
+      _targetPoint = null;
+    }
+  }
 
   @override
   void initState() {
@@ -120,28 +143,26 @@ class _BounceTapperState extends State<BounceTapper>
       ),
     );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Get the target border radius after the frame is rendered.
       if (widget.highlightBorderRadius == null) {
         targetRadius = getChildBorderCloseBorderRadius(context);
       }
 
-      final targetScrollController = widget.scrollController ??
-          Scrollable.maybeOf(context)?.widget.controller;
+      // Prevent mounting gaps with a small delay trick.
+      await Future.delayed(Duration.zero);
+      _scrollController = widget.scrollController != null &&
+              (widget.scrollController?.hasClients ?? false)
+          ? widget.scrollController
+          : (mounted ? Scrollable.maybeOf(context)?.widget.controller : null);
 
       // Listen for scroll events to trigger the grow animation if enabled.
-      if (targetScrollController != null && widget.disableBounceOnScroll) {
-        targetScrollController.addListener(
-          () async {
-            if (!widget.enable ||
-                !_controller.isForwardOrCompleted ||
-                _targetPoint == null) return;
-
-            await _controller.reverse();
-            resetProcessConfigs(this);
-          },
-        );
+      if (_scrollController != null && widget.disableBounceOnScroll) {
+        _scrollController.addListener(_disableBounceOnScroll);
       }
+
+      GestureBinding.instance.pointerRouter
+          .addGlobalRoute(_initializePointerOnException);
     });
   }
 
@@ -192,7 +213,9 @@ class _BounceTapperState extends State<BounceTapper>
       onPointerUp: (event) async {
         if (!widget.enable ||
             _controller.isDismissed ||
-            _targetPoint != event.pointer) return;
+            _targetPoint != event.pointer) {
+          return;
+        }
 
         await _controller.forward();
         await Future.delayed(widget.delayedDurationBeforeGrow);
@@ -205,7 +228,10 @@ class _BounceTapperState extends State<BounceTapper>
           } else if (widget.onTap != null) {
             await Future.value(widget.onTap!());
           }
-        }).whenComplete(() => resetProcessConfigs(this));
+        }).whenComplete(() async {
+          await _controller.reverse();
+          resetProcessConfigs(this);
+        });
       },
 
       /// Build the widget with the shrink/grow animation applied.
@@ -262,6 +288,11 @@ class _BounceTapperState extends State<BounceTapper>
     _controller.stop();
     _controller.dispose();
     _longPressTimer?.cancel();
+    if (_scrollController != null) {
+      _scrollController.removeListener(_disableBounceOnScroll);
+    }
+    GestureBinding.instance.pointerRouter
+        .removeGlobalRoute(_initializePointerOnException);
     super.dispose();
   }
 }

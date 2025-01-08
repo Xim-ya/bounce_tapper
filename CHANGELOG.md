@@ -42,3 +42,6 @@
 
 ## 1.0.9
 * Improved handling of nested scroll views and gesture conflicts.
+
+## 1.1.0
+* 간혹 Async Gap이 발생하는 이슈 수정 및 각종 퍼모먼스 개선 
