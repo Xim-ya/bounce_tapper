@@ -27,7 +27,7 @@ Add the following line to your project's `pubspec.yaml` file under the `dependen
 
 ```yaml
 dependencies:
-  bounce_tapper: ^1.1.1
+  bounce_tapper: ^1.1.2
 ```
 
 2. Install it

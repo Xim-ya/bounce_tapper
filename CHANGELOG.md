@@ -48,3 +48,6 @@
 
 ## 1.1.1
 * Fixed an issue where the listener added to the scroller was not properly removed.
+
+## 1.1.2
+* Added handling to catch unexpected exceptions to prevent them from interrupting the animation.

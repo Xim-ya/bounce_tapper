@@ -144,25 +144,30 @@ class _BounceTapperState extends State<BounceTapper>
     );
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // Get the target border radius after the frame is rendered.
-      if (widget.highlightBorderRadius == null) {
-        targetRadius = getChildBorderCloseBorderRadius(context);
+      try {
+        // Get the target border radius after the frame is rendered.
+        if (widget.highlightBorderRadius == null) {
+          targetRadius = getChildBorderCloseBorderRadius(context);
+        }
+
+        // Prevent mounting gaps with a small delay trick.
+        await Future.delayed(Duration.zero);
+        _scrollController = widget.scrollController != null &&
+                (widget.scrollController?.hasClients ?? false)
+            ? widget.scrollController
+            : (mounted ? Scrollable.maybeOf(context)?.widget.controller : null);
+
+        // Listen for scroll events to trigger the grow animation if enabled.
+        if (_scrollController != null && widget.disableBounceOnScroll) {
+          _scrollController?.addListener(_disableBounceOnScroll);
+        }
+
+        GestureBinding.instance.pointerRouter
+            .addGlobalRoute(_initializePointerOnException);
+      } catch (e) {
+        log('catch Exception on initialization / This Exception is not Error: $e');
+        resetProcessConfigs(this);
       }
-
-      // Prevent mounting gaps with a small delay trick.
-      await Future.delayed(Duration.zero);
-      _scrollController = widget.scrollController != null &&
-              (widget.scrollController?.hasClients ?? false)
-          ? widget.scrollController
-          : (mounted ? Scrollable.maybeOf(context)?.widget.controller : null);
-
-      // Listen for scroll events to trigger the grow animation if enabled.
-      if (_scrollController != null && widget.disableBounceOnScroll) {
-        _scrollController?.addListener(_disableBounceOnScroll);
-      }
-
-      GestureBinding.instance.pointerRouter
-          .addGlobalRoute(_initializePointerOnException);
     });
   }
 
@@ -174,64 +179,81 @@ class _BounceTapperState extends State<BounceTapper>
       /// When a pointer moves within the widget.
       /// If the pointer moves outside the touch area, trigger the grow animation.
       onPointerMove: (event) async {
-        if (!widget.enable) return;
+        try {
+          if (!widget.enable) return;
 
-        if (!isWithinBounds(
-          position: event.localPosition,
-          touchAreaSize: _touchAreaKey.currentContext?.size ?? Size.zero,
-        )) {
-          if (_controller.isCompleted) {
-            await _controller.reverse();
-            resetProcessConfigs(this);
+          if (!isWithinBounds(
+            position: event.localPosition,
+            touchAreaSize: _touchAreaKey.currentContext?.size ?? Size.zero,
+          )) {
+            if (_controller.isCompleted) {
+              await _controller.reverse();
+              resetProcessConfigs(this);
+            }
           }
+        } catch (e) {
+          log('Catch Exception on [onPointerMove] / This Exception is not Error: $e');
+          resetProcessConfigs(this);
         }
       },
 
       /// When a pointer touches the display.
       /// Start the shrink animation and initialize the long press timer.
       onPointerDown: (event) async {
-        if (!widget.enable || _targetPoint != null || _controller.isAnimating) {
-          return;
-        }
+        try {
+          if (!widget.enable ||
+              _targetPoint != null ||
+              _controller.isAnimating) {
+            return;
+          }
 
-        _targetPoint = event.pointer;
-        _controller.forward();
+          _targetPoint = event.pointer;
+          _controller.forward();
 
-        if (widget.onLongPress != null || widget.onLongPressUp != null) {
-          // Start long press timer
-          _longPressTimer = Timer(const Duration(milliseconds: 500), () {
-            if (widget.onLongPress != null) {
-              widget.onLongPress!();
-              _isLongPressed = true;
-            }
-          });
+          if (widget.onLongPress != null || widget.onLongPressUp != null) {
+            // Start long press timer
+            _longPressTimer = Timer(const Duration(milliseconds: 500), () {
+              if (widget.onLongPress != null) {
+                widget.onLongPress!();
+                _isLongPressed = true;
+              }
+            });
+          }
+        } catch (e) {
+          log('Catch Exception on [onPointerDown] / This Exception is not Error: $e');
+          resetProcessConfigs(this);
         }
       },
 
       /// When a pointer is lifted from the display.
       /// If lifted within the touch area, trigger the onTap or onLongPressUp callback and grow animation.
       onPointerUp: (event) async {
-        if (!widget.enable ||
-            _controller.isDismissed ||
-            _targetPoint != event.pointer) {
-          return;
-        }
-
-        await _controller.forward();
-        await Future.delayed(widget.delayedDurationBeforeGrow);
-
-        _controller.reverse();
-
-        Future.microtask(() async {
-          if (_isLongPressed && widget.onLongPressUp != null) {
-            await Future.value(widget.onLongPressUp!());
-          } else if (widget.onTap != null) {
-            await Future.value(widget.onTap!());
+        try {
+          if (!widget.enable ||
+              _controller.isDismissed ||
+              _targetPoint != event.pointer) {
+            return;
           }
-        }).whenComplete(() async {
-          await _controller.reverse();
+
+          await _controller.forward();
+          await Future.delayed(widget.delayedDurationBeforeGrow);
+
+          _controller.reverse();
+
+          Future.microtask(() async {
+            if (_isLongPressed && widget.onLongPressUp != null) {
+              await Future.value(widget.onLongPressUp!());
+            } else if (widget.onTap != null) {
+              await Future.value(widget.onTap!());
+            }
+          }).whenComplete(() async {
+            await _controller.reverse();
+            resetProcessConfigs(this);
+          });
+        } catch (e) {
+          log('Catch Exception on [onPointerUp] / This Exception is not Error: $e');
           resetProcessConfigs(this);
-        });
+        }
       },
 
       /// Build the widget with the shrink/grow animation applied.
@@ -285,14 +307,19 @@ class _BounceTapperState extends State<BounceTapper>
 
   @override
   void dispose() {
-    _controller.stop();
-    _controller.dispose();
-    _longPressTimer?.cancel();
-    if (_scrollController != null) {
-      _scrollController?.removeListener(_disableBounceOnScroll);
+    try {
+      _controller.stop();
+      _controller.dispose();
+      _longPressTimer?.cancel();
+      if (_scrollController != null) {
+        _scrollController?.removeListener(_disableBounceOnScroll);
+      }
+      GestureBinding.instance.pointerRouter
+          .removeGlobalRoute(_initializePointerOnException);
+    } catch (e) {
+      log('catch Exception on Dispose state');
     }
-    GestureBinding.instance.pointerRouter
-        .removeGlobalRoute(_initializePointerOnException);
+
     super.dispose();
   }
 }
