@@ -44,4 +44,7 @@
 * Improved handling of nested scroll views and gesture conflicts.
 
 ## 1.1.0
-* 간혹 Async Gap이 발생하는 이슈 수정 및 각종 퍼모먼스 개선 
+* Fixed an occasional issue where an async gap occurred and implemented various performance improvements.
+
+## 1.1.1
+* Fixed an issue where the listener added to the scroller was not properly removed.

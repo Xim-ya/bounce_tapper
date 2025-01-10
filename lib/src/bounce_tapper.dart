@@ -91,7 +91,7 @@ class _BounceTapperState extends State<BounceTapper>
   late final Animation<double> _animation;
 
   /// Scroll controller for listening to scroll events and triggering specific actions.
-  late final ScrollController? _scrollController;
+  ScrollController? _scrollController;
 
   /// Key for the touch area widget.
   final GlobalKey _touchAreaKey = GlobalKey();
@@ -158,7 +158,7 @@ class _BounceTapperState extends State<BounceTapper>
 
       // Listen for scroll events to trigger the grow animation if enabled.
       if (_scrollController != null && widget.disableBounceOnScroll) {
-        _scrollController.addListener(_disableBounceOnScroll);
+        _scrollController?.addListener(_disableBounceOnScroll);
       }
 
       GestureBinding.instance.pointerRouter
@@ -289,7 +289,7 @@ class _BounceTapperState extends State<BounceTapper>
     _controller.dispose();
     _longPressTimer?.cancel();
     if (_scrollController != null) {
-      _scrollController.removeListener(_disableBounceOnScroll);
+      _scrollController?.removeListener(_disableBounceOnScroll);
     }
     GestureBinding.instance.pointerRouter
         .removeGlobalRoute(_initializePointerOnException);
