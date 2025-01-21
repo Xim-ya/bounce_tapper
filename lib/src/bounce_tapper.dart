@@ -120,7 +120,8 @@ class _BounceTapperState extends State<BounceTapper>
   /// Handles cases where [onPointerUp] is not triggered after [onPointerDown].
   /// This may occur in rare scenarios, and [_targetPoint] is reset in such cases.
   void _initializePointerOnException(PointerEvent event) {
-    if (_targetPoint != null && event is PointerCancelEvent) {
+    if (_targetPoint != null &&
+        (event is PointerCancelEvent || event is PointerRemovedEvent)) {
       _targetPoint = null;
     }
   }
@@ -165,7 +166,7 @@ class _BounceTapperState extends State<BounceTapper>
         GestureBinding.instance.pointerRouter
             .addGlobalRoute(_initializePointerOnException);
       } catch (e) {
-        log('catch Exception on initialization / This Exception is not Error: $e');
+        log('catch Exception on initialization');
         resetProcessConfigs(this);
       }
     });
@@ -192,7 +193,7 @@ class _BounceTapperState extends State<BounceTapper>
             }
           }
         } catch (e) {
-          log('Catch Exception on [onPointerMove] / This Exception is not Error: $e');
+          log('Catch Exception on [onPointerMove]');
           resetProcessConfigs(this);
         }
       },
@@ -220,7 +221,7 @@ class _BounceTapperState extends State<BounceTapper>
             });
           }
         } catch (e) {
-          log('Catch Exception on [onPointerDown] / This Exception is not Error: $e');
+          log('Catch Exception on [onPointerDown]');
           resetProcessConfigs(this);
         }
       },
@@ -251,7 +252,7 @@ class _BounceTapperState extends State<BounceTapper>
             resetProcessConfigs(this);
           });
         } catch (e) {
-          log('Catch Exception on [onPointerUp] / This Exception is not Error: $e');
+          log('Catch Exception on [onPointerUp]');
           resetProcessConfigs(this);
         }
       },

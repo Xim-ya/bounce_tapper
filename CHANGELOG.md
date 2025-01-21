@@ -51,3 +51,6 @@
 
 ## 1.1.2
 * Added handling to catch unexpected exceptions to prevent them from interrupting the animation.
+
+## 1.1.3
+* Exception handling for cases where requestFocus interferes with gesture arena behavior.
