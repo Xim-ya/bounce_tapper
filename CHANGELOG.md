@@ -54,3 +54,6 @@
 
 ## 1.1.3
 * Exception handling for scenarios where requestFocus (or other gesture behaviors) interfere with the gesture arena.
+
+## 1.1.4
+* Fixed an issue where an exception occurring on a different screen could affect the bounceTapper gesture arena logic. Version 1.1.3 has been retracted, and it is recommended to use version 1.1.4 instead.    
