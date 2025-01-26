@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 part 'bounce_tapper_event.dart';
+
 part 'target_point.dart';
 
 class BounceTapper extends StatefulWidget {
@@ -117,15 +118,6 @@ class _BounceTapperState extends State<BounceTapper>
     resetProcessConfigs(this);
   }
 
-  /// Handles cases where [onPointerUp] is not triggered after [onPointerDown].
-  /// This may occur in rare scenarios, and [_targetPoint] is reset in such cases.
-  void _initializePointerOnException(PointerEvent event) {
-    if (_targetPoint != null &&
-        (event is PointerCancelEvent || event is PointerRemovedEvent)) {
-      _targetPoint = null;
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -162,9 +154,6 @@ class _BounceTapperState extends State<BounceTapper>
         if (_scrollController != null && widget.disableBounceOnScroll) {
           _scrollController?.addListener(_disableBounceOnScroll);
         }
-
-        GestureBinding.instance.pointerRouter
-            .addGlobalRoute(_initializePointerOnException);
       } catch (e) {
         log('catch Exception on initialization');
         resetProcessConfigs(this);
@@ -239,7 +228,7 @@ class _BounceTapperState extends State<BounceTapper>
           await _controller.forward();
           await Future.delayed(widget.delayedDurationBeforeGrow);
 
-          _controller.reverse();
+          unawaited(_controller.reverse());
 
           Future.microtask(() async {
             if (_isLongPressed && widget.onLongPressUp != null) {
@@ -247,12 +236,29 @@ class _BounceTapperState extends State<BounceTapper>
             } else if (widget.onTap != null) {
               await Future.value(widget.onTap!());
             }
-          }).whenComplete(() async {
-            await _controller.reverse();
-            resetProcessConfigs(this);
           });
         } catch (e) {
           log('Catch Exception on [onPointerUp]');
+          resetProcessConfigs(this);
+        } finally {
+          // This is a very rare scenario. If an exception is thrown, resetting `_targetPoint` here
+          // can help prevent the gesture arena from interfering with other screens.
+
+          await Future.delayed(
+              widget.growDuration + widget.delayedDurationBeforeGrow);
+
+          resetProcessConfigs(this);
+        }
+      },
+
+      /// Handles cases where [onPointerUp] is not triggered after [onPointerDown].
+      /// This may occur in rare scenarios, and [_targetPoint] is reset in such cases.
+      onPointerCancel: (event) async {
+        if (_targetPoint == event.pointer) {
+          if (_controller.isAnimating || _controller.isCompleted) {
+            await _controller.reverse();
+          }
+
           resetProcessConfigs(this);
         }
       },
@@ -315,8 +321,6 @@ class _BounceTapperState extends State<BounceTapper>
       if (_scrollController != null) {
         _scrollController?.removeListener(_disableBounceOnScroll);
       }
-      GestureBinding.instance.pointerRouter
-          .removeGlobalRoute(_initializePointerOnException);
     } catch (e) {
       log('catch Exception on Dispose state');
     }
